@@ -10,164 +10,176 @@ import UIKit
 import CoreLocation
 import MapKit
 
-var circleRegion: CLCircularRegion!
-//6D810169-5797-4EF2-B141-554360C4086E
-
 protocol LocationMessageDelegate {
     func locationMessage(lat: Double, log: Double, floor: Int?)
     func reciveBeaconRegion()
-    //Optional
     func locationAddressMessage(street: String?, city: String?, country: String?)
-}
-
-//Optional
-extension LocationMessageDelegate {
-    func locationAddressMessage(street: String?, city: String?, country: String?) {
-        print("\(#function)")
-    }
+    func orientationMessage(truthOrientation: String, magneticOrientation: String)
 }
 
 
-class LocationService: NSObject,CLLocationManagerDelegate {
+class LocationService: NSObject {
     static let `default` = LocationService()
     var delegate: LocationMessageDelegate!
-    private let geo = CLGeocoder()
-    
-    
     let locationManager = CLLocationManager()
     
+    ///区域监视
+    var geographicalMonitor: CLCircularRegion!
+    ///Beacon 监视
+    var beaconMonitor: CLBeaconRegion!
+    
+    ///请求定位权限
     func requestLocationService() {
         locationManager.requestAlwaysAuthorization()
-//        registerMotion()
     }
     
+    ///开始定位
     func startLocation() {
-        if !CLLocationManager.locationServicesEnabled() {
-            return
-        }
-        switch CLLocationManager.authorizationStatus() {
-        case .authorizedAlways,.authorizedWhenInUse:
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = 1
-            locationManager.distanceFilter = 0.5
-            locationManager.activityType = .fitness
-            locationManager.allowsBackgroundLocationUpdates = true
-            locationManager.startUpdatingLocation()
-            registerMotion()
-//            guard let uuid: UUID = UUID(uuidString: "6D810169-5797-4EF2-B141-554360C4086E") else {
+        locationAction()
+//        if !CLLocationManager.locationServicesEnabled() {
+//            return
+//        }
+//        switch CLLocationManager.authorizationStatus() {
+//        case .authorizedAlways:
+//            //uuid AE6C1280-0BEF-4FF8-AAD1-7495397FF826
+//            guard let uuid = UUID(uuidString: "AE6C1280-0BEF-4FF8-AAD1-7495397FF826") else {
+//                locationAction()
 //                return
 //            }
-//            let clBeaconRegion = CLBeaconRegion(proximityUUID: uuid, identifier: "yaosixuBluetooth")
-//            if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-//                locationManager.startMonitoring(for: clBeaconRegion)
-//                locationManager.requestState(for: clBeaconRegion)
-//                print("isMonitoringAvailable is true")
+//            beaconMonitor = CLBeaconRegion(proximityUUID: uuid, major: 1, minor: 1, identifier: "yaosixu")
+//            locationManager.startMonitoring(for: beaconMonitor)
+//            if CLLocationManager.isRangingAvailable() {
+//                locationManager.startRangingBeacons(in: beaconMonitor)
+//                print("CLLocationManager Ranging is available")
 //            } else {
-//                print("isMonitoringAvailable is false")
+//                print("CLLocationManager Ranging is unavailable")
 //            }
-        default:
-            return
-        }
+//            locationAction()
+//        case .authorizedWhenInUse:
+//            locationAction()
+//        default:
+//            return
+//        }
     }
     
-    ///注册位置监听
-    func registerMotion() {
-        print("\(#function)")
-        var radius = 300.0
-        //34.225942000000003,108.901691
-        let location = CLLocationCoordinate2D(latitude: 34.2274574207637, longitude: 108.897323768781)
-        circleRegion = CLCircularRegion(center: location, radius: radius, identifier: "roadFive")
-        print("\(locationManager.maximumRegionMonitoringDistance)")
-        if radius > locationManager.maximumRegionMonitoringDistance {
-            radius = locationManager.maximumRegionMonitoringDistance
-        }
-        if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
-            locationManager.startMonitoring(for: circleRegion)
-            locationManager.requestState(for: circleRegion)
-            print("++++++++")
-        } else {
-            print("-----------")
-        }
+    ///定位
+    func locationAction() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = 1
+        locationManager.distanceFilter = 0.5
+        locationManager.activityType = .fitness
+//        locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.startUpdatingLocation()
+//        getDeviceOrientation()
     }
     
-    func geoCoder(location: CLLocation) {
-        geo.reverseGeocodeLocation(location, completionHandler: { [unowned self] in
-            if let placeMark = $0.0 {
-                let street: String? = placeMark.last?.thoroughfare
-                let city: String? = placeMark.last?.locality
-                let country: String? = placeMark.last?.country
-                self.delegate.locationAddressMessage(street: street, city: city, country: country)
-            }
-        })
+    ///获取设备朝向
+    /*
+        方向包括两种：地磁北极，和地理北极。如果想获取地理北极就需要打开定位服务.
+     */
+    func getDeviceOrientation() {
+        ///判断方向是否可用
+        if CLLocationManager.headingAvailable() {
+            locationManager.startUpdatingHeading()
+            print("heading is available")
+        } else{
+            print("heading is unAvailable")
+        }
+        
+        let view = MKPinAnnotationView()
+        let result = view.canShowCallout
     }
-    
-    //位置更新
+}
+
+extension LocationService : CLLocationManagerDelegate {
+    ///位置更新
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else {
-            locationManager.stopUpdatingLocation()
+        guard let currentLocation = locations.last else {
             return
         }
-        let floorLeveal = locations.first?.floor?.level
-        geoCoder(location: location)
-        delegate.locationMessage(lat: location.coordinate.latitude, log: location.coordinate.longitude, floor: floorLeveal)
+        delegate.locationMessage(lat: currentLocation.coordinate.latitude, log: currentLocation.coordinate.longitude, floor: 12)
     }
     
-    //朝向 0朝北
+    
+    ///方向信息
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-    }
-    
-    
-    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-        print("\(#function),region's Identifier = \(region.identifier)")
-        if  state == .inside && region.identifier == "roadFive" {
-            guard let url = URL(string: "tel://\(15877347757)") else {
-                return
-            }
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            
-        }
-    }
-    
-    ///用户进入一个地区
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        if region.identifier == "roadFive" {
-            guard let url = URL(string: "tel://\(15877347757)") else {
-                return
-            }
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            
-        }
-    }
-    
-    ///用户离开一个地区
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        if region.identifier == "roadFive" {
-            guard let url = URL(string: "tel://\(15877347757)") else {
-                return
-            }
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        } else {
-            
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        print("\(#function)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("\(#function)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        print("\(#function)")
-        delegate.reciveBeaconRegion()
-        guard let firstBeacon = beacons.first else {
+        if newHeading.headingAccuracy < 0 {
             return
         }
-        print("distanse = \(firstBeacon.proximity)")
+        print("\(newHeading.trueHeading),\(newHeading.magneticHeading)")
+        let resultOrientation = transfromLocationDataToLocationString(trueHeading: newHeading.trueHeading, mangneticHeading: newHeading.magneticHeading)
+        delegate.orientationMessage(truthOrientation: resultOrientation.0, magneticOrientation: resultOrientation.1)
+    }
+    
+//    ///进入一个监视区域
+//    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+//        print("\(#function),\(region.identifier)")
+//    }
+//    
+//    ///离开一个监视区域
+//    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+//        print("\(#function),\(region.identifier)")
+//    }
+//    
+//    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+//        print("\(#function),\(beacons.count),\(region.proximityUUID),\(region.identifier)")
+//    }
+//    
+//    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+//        print("\(#function),\(region?.identifier),\(error.localizedDescription)")
+//    }
+//    
+//    func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
+//        print("\(#function),\(region.proximityUUID),\(region.identifier),\(error.localizedDescription)")
+//    }
+}
+
+///将地理信息转为文字
+extension LocationService {
+    
+    ///接收真实方位和地磁方位，返回位置描述
+    func transfromLocationDataToLocationString(trueHeading: Double = 0.0, mangneticHeading: Double = 0.0) -> (String,String) {
+        var trueHeadingStr: String = ""
+        var mangneticHeadingStr: String = ""
+        trueHeadingStr = turthOrientation(angle: trueHeading)
+        mangneticHeadingStr = turthOrientation(angle: mangneticHeading)
+        return (trueHeadingStr, mangneticHeadingStr)
+    }
+    
+    ///返回大方向，如东、南、西、北
+    func turthOrientation(angle: Double) -> String {
+        let orientationAngle = angle / 90.0
+        if orientationAngle == 0 {
+            return "北"
+        } else if orientationAngle == 1 {
+            return "东"
+        } else if orientationAngle == 2 {
+            return "南"
+        } else if orientationAngle == 3 {
+            return "西"
+        }
+        
+        switch angle  {
+        case 0...45:
+            return "北偏东"
+        case 315.01...360:
+            return "北偏西"
+        case 45.01...90:
+            return "东偏北"
+        case 90.01...135:
+            return "东偏南"
+        case 135.01...180.0:
+            return "南偏东"
+        case  180.01...225:
+            return "南偏西"
+        case 225.0...270:
+            return "西偏南"
+        case 270.01...315:
+            return "西偏北"
+        default:
+            return "未知"
+        }
     }
     
 }
+

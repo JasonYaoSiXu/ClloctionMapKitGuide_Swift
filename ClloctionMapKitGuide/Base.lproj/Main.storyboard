@@ -100,6 +100,9 @@
                                     <action selector="tapButtonAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="owM-sW-nNz"/>
                                 </connections>
                             </button>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="f3D-EU-qOr">
+                                <rect key="frame" x="0.0" y="269" width="375" height="300"/>
+                            </mapView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -108,6 +111,7 @@
                             <constraint firstItem="2q0-Yu-Fix" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="391-ho-DHd"/>
                             <constraint firstItem="LaU-RI-ZaG" firstAttribute="top" secondItem="PcC-eR-sHO" secondAttribute="bottom" constant="8" id="3Gg-Xe-o6p"/>
                             <constraint firstItem="b1T-Pm-dKw" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="6rw-Xs-HGD"/>
+                            <constraint firstItem="LKy-jP-uSu" firstAttribute="top" secondItem="f3D-EU-qOr" secondAttribute="bottom" constant="48" id="Aog-V9-OTn"/>
                             <constraint firstItem="PcC-eR-sHO" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="D4Q-R3-hnE"/>
                             <constraint firstItem="Ora-EF-q5s" firstAttribute="top" secondItem="b1T-Pm-dKw" secondAttribute="bottom" constant="7.5" id="Isi-QN-7t6"/>
                             <constraint firstItem="6xz-Ka-3g6" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="MCN-rL-obA"/>
@@ -117,16 +121,19 @@
                             <constraint firstItem="2q0-Yu-Fix" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="W9U-bF-2Nr"/>
                             <constraint firstItem="lqY-UG-1cZ" firstAttribute="top" secondItem="iQR-ea-Phg" secondAttribute="bottom" constant="8" id="WhX-sM-2zs"/>
                             <constraint firstItem="LKy-jP-uSu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XuD-AA-s9j"/>
+                            <constraint firstAttribute="trailing" secondItem="f3D-EU-qOr" secondAttribute="trailing" id="a2R-0b-COU"/>
                             <constraint firstItem="ckG-tI-CaD" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="b3p-dk-auq"/>
                             <constraint firstItem="QUX-HK-QRU" firstAttribute="leading" secondItem="LaU-RI-ZaG" secondAttribute="leading" id="esE-T5-b9m"/>
                             <constraint firstItem="lqY-UG-1cZ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="jcJ-Y7-tQE"/>
                             <constraint firstItem="Ora-EF-q5s" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="k9X-KM-vGB"/>
                             <constraint firstItem="i3i-YZ-lwi" firstAttribute="top" secondItem="QUX-HK-QRU" secondAttribute="bottom" constant="8" id="mcp-qy-m3T"/>
+                            <constraint firstItem="f3D-EU-qOr" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="nCc-9A-gjm"/>
                             <constraint firstItem="iQR-ea-Phg" firstAttribute="top" secondItem="6xz-Ka-3g6" secondAttribute="bottom" constant="6" id="oiq-dZ-xvq"/>
                             <constraint firstItem="6xz-Ka-3g6" firstAttribute="top" secondItem="2q0-Yu-Fix" secondAttribute="bottom" constant="7" id="oo6-V2-Kqe"/>
                             <constraint firstItem="ckG-tI-CaD" firstAttribute="top" secondItem="Vum-kt-5Wi" secondAttribute="bottom" constant="8" id="qE9-Kd-rMs"/>
                             <constraint firstItem="LaU-RI-ZaG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="r1U-GH-qcu"/>
                             <constraint firstItem="b1T-Pm-dKw" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="smC-RV-ieH"/>
+                            <constraint firstItem="f3D-EU-qOr" firstAttribute="top" secondItem="i3i-YZ-lwi" secondAttribute="bottom" constant="34" id="tyE-qU-516"/>
                             <constraint firstItem="Vum-kt-5Wi" firstAttribute="top" secondItem="lqY-UG-1cZ" secondAttribute="bottom" constant="8" id="w0G-th-CRo"/>
                             <constraint firstItem="i3i-YZ-lwi" firstAttribute="leading" secondItem="QUX-HK-QRU" secondAttribute="leading" id="xyY-zU-Qga"/>
                         </constraints>
@@ -138,6 +145,7 @@
                         <outlet property="floorLeavel" destination="PcC-eR-sHO" id="Yws-ah-XFg"/>
                         <outlet property="latLabel" destination="b1T-Pm-dKw" id="rNs-3q-XRO"/>
                         <outlet property="logLabel" destination="Ora-EF-q5s" id="O3q-tt-i39"/>
+                        <outlet property="mapView" destination="f3D-EU-qOr" id="78R-hb-he5"/>
                         <outlet property="streetLabel" destination="LaU-RI-ZaG" id="jLa-es-K1j"/>
                     </connections>
                 </viewController>

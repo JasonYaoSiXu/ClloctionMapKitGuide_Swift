@@ -289,7 +289,7 @@
 				DEVELOPMENT_TEAM = J3V6S85N9Y;
 				INFOPLIST_FILE = ClloctionMapKitGuide/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = Ysx.ClloctionMapKitGuide;
+				PRODUCT_BUNDLE_IDENTIFIER = Ysx.ClloctionMapKitGuides;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -303,7 +303,7 @@
 				DEVELOPMENT_TEAM = J3V6S85N9Y;
 				INFOPLIST_FILE = ClloctionMapKitGuide/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = Ysx.ClloctionMapKitGuide;
+				PRODUCT_BUNDLE_IDENTIFIER = Ysx.ClloctionMapKitGuides;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
