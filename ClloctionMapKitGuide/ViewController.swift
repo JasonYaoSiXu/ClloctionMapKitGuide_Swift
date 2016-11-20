@@ -18,12 +18,19 @@ class ViewController: UIViewController {
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var countryLabel: UILabel!
 
-    //科技五路  34.216520000000003,108.886346
-    //枫叶广场 34.225942000000003,108.901691
+    var myLocation: CLLocationManager!
+    var myRegion: CLBeaconRegion!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        LocationService.default.delegate = self
-        // Do any additional setup after loading the view, typically from a nib.
+        LocationService.default.startLocation()
+        
+//        myLocation = CLLocationManager()
+//        myLocation.delegate = self
+//        guard let uuid = UUID(uuidString: "6D810169-5797-4EF2-B141-554360C4086E") else {
+//            return
+//        }
+//        myRegion = CLBeaconRegion(proximityUUID: uuid, identifier: "yaosixuBluetooth")
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,45 +38,34 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    
     @IBAction func tapButtonAction(_ sender: UIButton) {
-//        LocationService.default.startLocation()
-//        let clGeoCoder = CLGeocoder()
-//        clGeoCoder.geocodeAddressString("西安市枫叶广场", completionHandler: {
-//            if let placeMark = $0.0 {
-//                let cllcotion = placeMark.first?.location
-//                print("cllcotion = \(cllcotion?.coordinate.latitude),\(cllcotion?.coordinate.longitude)")
-//            }
-//        })
-        LocationService.default.startLocation()
     }
         
 }
 
-extension ViewController: LocationMessageDelegate {
-    func locationMessage(lat: Double, log: Double, floor: Int?) {
-        DispatchQueue.main.async { [unowned self] in
-            self.latLabel.text = "\(lat)"
-            self.logLabel.text = "\(log)"
-            self.floorLeavel.text = "\(floor)"
+extension ViewController : CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        myLocation.startMonitoring(for: myRegion)
+        myLocation.startRangingBeacons(in: myRegion)
+        for region in myLocation.monitoredRegions {
+            print("\(#function),region = \(region)")
         }
     }
     
-    func locationAddressMessage(street: String?, city: String?, country: String?) {
-        DispatchQueue.main.async { [unowned self] in
-            self.streetLabel.text = street
-            self.cityLabel.text = city
-            self.countryLabel.text = country
-        }
+    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        myLocation.requestState(for: myRegion)
     }
     
-    func reciveBeaconRegion() {
-         self.view.backgroundColor = UIColor.blue
-        let time: DispatchTime = DispatchTime.now() + 3
-        DispatchQueue.main.asyncAfter(deadline: time, execute: { [unowned self] in
-            self.view.backgroundColor = UIColor.red
-        })
+    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+        print("\(#function),\(state.rawValue)")
     }
     
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        print("\(#function)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        print("\(#function),\(error.localizedDescription)")
+    }
 }
-
