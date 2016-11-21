@@ -14,6 +14,7 @@
 		8293C0181DDBE9C200EFCC85 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8293C0161DDBE9C200EFCC85 /* LaunchScreen.storyboard */; };
 		8293C0211DDBE9CC00EFCC85 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8293C0201DDBE9CC00EFCC85 /* MapKit.framework */; };
 		8293C0231DDBEA4200EFCC85 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8293C0221DDBEA4200EFCC85 /* LocationService.swift */; };
+		82F5C11D1DE2F375007D36DF /* ConfigUserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F5C11C1DE2F375007D36DF /* ConfigUserNotification.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		8293C0191DDBE9C200EFCC85 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8293C0201DDBE9CC00EFCC85 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		8293C0221DDBEA4200EFCC85 /* LocationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		82F5C11C1DE2F375007D36DF /* ConfigUserNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigUserNotification.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				8293C00D1DDBE9C200EFCC85 /* AppDelegate.swift */,
 				8293C00F1DDBE9C200EFCC85 /* ViewController.swift */,
 				8293C0221DDBEA4200EFCC85 /* LocationService.swift */,
+				82F5C11C1DE2F375007D36DF /* ConfigUserNotification.swift */,
 				8293C0111DDBE9C200EFCC85 /* Main.storyboard */,
 				8293C0141DDBE9C200EFCC85 /* Assets.xcassets */,
 				8293C0161DDBE9C200EFCC85 /* LaunchScreen.storyboard */,
@@ -163,6 +166,7 @@
 				8293C0101DDBE9C200EFCC85 /* ViewController.swift in Sources */,
 				8293C0231DDBEA4200EFCC85 /* LocationService.swift in Sources */,
 				8293C00E1DDBE9C200EFCC85 /* AppDelegate.swift in Sources */,
+				82F5C11D1DE2F375007D36DF /* ConfigUserNotification.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
