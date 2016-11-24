@@ -17,8 +17,6 @@ import UserNotifications
 protocol LocationMessageDelegate {
     ///位置坐标
     func locationMessage(locationCoord: CLLocationCoordinate2D)
-    ///监听到一个Beacon
-    func reciveBeaconRegion()
     ///位置信息
     func locationAddressMessage(street: String?)
 }
@@ -49,11 +47,7 @@ class LocationService: NSObject {
         
         switch CLLocationManager.authorizationStatus() {
         case .authorizedAlways:
-            /**
-             设置监听信息 位置监听发送通知有两种，一种是下面要写的，另一种是本地通知有一种类型是用来监听地理位置改变的
-             需要注意一点locationManager最多绑定20个CLRegion,多于20个的话会报错未能连接成功还是什么，忘了错误码应该是5
-             */
-            configMonitor()
+            locationManager.delegate = self
             //允许后台刷新
             locationManager.allowsBackgroundLocationUpdates = true
             //后台活动类型
@@ -64,7 +58,11 @@ class LocationService: NSObject {
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
             //开始定位
             locationManager.startUpdatingLocation()
-            locationManager.delegate = self
+            /**
+             设置监听信息 位置监听发送通知有两种，一种是下面要写的，另一种是本地通知有一种类型是用来监听地理位置改变的
+             需要注意一点locationManager最多绑定20个CLRegion,多于20个的话会报错未能连接成功还是什么，忘了错误码应该是5
+             */
+            configMonitor()
         default:
             return
         }
@@ -73,12 +71,18 @@ class LocationService: NSObject {
     //设置监听信息
     func configMonitor() {
         if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
-            var cllocationCoordinate = CLLocationCoordinate2D(latitude: 34.2275864147483, longitude: 108.897094888375)
-            companyGeographicalMonitor = CLCircularRegion(center: cllocationCoordinate, radius: 300, identifier: "company")
+            var cllocationCoordinate = CLLocationCoordinate2D(latitude: 34.2274859637402, longitude: 108.897247123795)
+            var radius: Double = 300
+            
+            if radius > locationManager.maximumRegionMonitoringDistance {
+                radius = locationManager.maximumRegionMonitoringDistance
+            }
+            
+            companyGeographicalMonitor = CLCircularRegion(center: cllocationCoordinate, radius: radius, identifier: "company")
             locationManager.startMonitoring(for: companyGeographicalMonitor)
             
             cllocationCoordinate = CLLocationCoordinate2D(latitude: 34.2165240000, longitude: 108.8880780000)
-            homeGeographicalMonitor = CLCircularRegion(center: cllocationCoordinate, radius: 300, identifier: "home")
+            homeGeographicalMonitor = CLCircularRegion(center: cllocationCoordinate, radius: radius, identifier: "home")
             locationManager.startMonitoring(for: homeGeographicalMonitor)
         }
         
@@ -99,7 +103,7 @@ extension LocationService : CLLocationManagerDelegate {
     
     //授权状态变更
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        print("授权状态变更,state=\(status.rawValue)")
+        print("授权状态变更")
     }
     
     //位置更新
@@ -107,7 +111,8 @@ extension LocationService : CLLocationManagerDelegate {
         guard let lastLocation = locations.last else {
             return
         }
-        print("lat = \(lastLocation.coordinate.latitude),log = \(lastLocation.coordinate.longitude)")
+        self.delegate.locationMessage(locationCoord: lastLocation.coordinate)
+        transformCoordinateToAddress(location: lastLocation)
     }
     
     //位置更新失败
@@ -215,6 +220,20 @@ extension LocationService {
         default:
             return CateGeographicalIdentifier.userOutsideBeacon.rawValue
         }
+    }
+ 
+    //将地理信息从经纬度转成相应的地理位置名称
+    func transformCoordinateToAddress(location: CLLocation) {
+        let geoCoder = CLGeocoder()
+        var streetName: String = ""
+        
+        geoCoder.reverseGeocodeLocation(location, completionHandler: {
+            guard let placeMark = $0.0 else {
+                return
+            }
+            streetName = placeMark.first?.thoroughfare ?? ""
+            self.delegate.locationAddressMessage(street: streetName)
+        })
     }
     
 }

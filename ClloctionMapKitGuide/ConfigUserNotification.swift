@@ -83,7 +83,10 @@ class UserNotification: NSObject {
         let userOutsideHome = UNNotificationCategory(identifier: CateGeographicalIdentifier.userOutsideHome.rawValue, actions: [lookNote,deleteNote], intentIdentifiers: [], options: [.customDismissAction])
         let userOutsideBeacon = UNNotificationCategory(identifier: CateGeographicalIdentifier.userOutsideBeacon.rawValue, actions: [lookNote,deleteNote], intentIdentifiers: [], options: [.customDismissAction])
         
-        let setNotificationCategory: Set<UNNotificationCategory> = [userNotificationEnterGeographicalCategor, userNotificationExitGeographicalCategor, userNotificationEnterBeaconCategor, userNotificationExteBeaconCategor, userInsideCompany, userInsideHome, userInsideBeacon, userOutsideCompany, userOutsideHome, userOutsideBeacon]
+        let userEnterCompany = UNNotificationCategory(identifier: "userEnterCompany", actions: [], intentIdentifiers: [], options: [.customDismissAction])
+        let userEnterHome = UNNotificationCategory(identifier: "userEnterHome", actions: [], intentIdentifiers: [], options: [.customDismissAction])
+        
+        let setNotificationCategory: Set<UNNotificationCategory> = [userNotificationEnterGeographicalCategor, userNotificationExitGeographicalCategor, userNotificationEnterBeaconCategor, userNotificationExteBeaconCategor, userInsideCompany, userInsideHome, userInsideBeacon, userOutsideCompany, userOutsideHome, userOutsideBeacon,userEnterCompany,userEnterHome]
         //将自已定的通知类型添加到userNotificationCenter
         userNotificationCenter.setNotificationCategories(setNotificationCategory)
     }

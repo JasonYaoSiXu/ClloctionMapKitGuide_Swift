@@ -2,36 +2,38 @@
 //  ViewControllerA.swift
 //  ClloctionMapKitGuide
 //
-//  Created by yaosixu on 2016/11/22.
+//  Created by yaosixu on 2016/11/23.
 //  Copyright © 2016年 Jason_Yao. All rights reserved.
 //
 
 import UIKit
 
 class ViewControllerA: UIViewController {
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.blue
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-        button.center = view.center
-        button.setTitle("A", for: .normal)
-        button.setTitleColor(UIColor.black, for: .normal)
         
-        button.addTarget(self, action: #selector(tapButtonAction), for: .touchUpInside)
+        let button = UIButton()
+        button.setTitle("关闭", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.sizeToFit()
+        button.center = view.center
+        button.addTarget(self, action: #selector(tapDismissAction), for: .touchUpInside)
         
         view.addSubview(button)
         // Do any additional setup after loading the view.
     }
 
+    func tapDismissAction() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    func tapButtonAction() {
-        self.dismiss(animated: true, completion: nil)
-    }
 
     /*
     // MARK: - Navigation
