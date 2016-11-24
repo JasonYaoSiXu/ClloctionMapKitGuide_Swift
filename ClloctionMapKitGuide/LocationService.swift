@@ -72,7 +72,7 @@ class LocationService: NSObject {
     func configMonitor() {
         if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
             var cllocationCoordinate = CLLocationCoordinate2D(latitude: 34.2274859637402, longitude: 108.897247123795)
-            var radius: Double = 300
+            var radius: Double = 100
             
             if radius > locationManager.maximumRegionMonitoringDistance {
                 radius = locationManager.maximumRegionMonitoringDistance

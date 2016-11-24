@@ -34,6 +34,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
         let userNotificationCenter = UNUserNotificationCenter.current()
         userNotificationCenter.delegate = self
         LocationService.default.delegate = self
@@ -48,6 +50,14 @@ class ViewController: UIViewController {
     
     @IBAction func tapLocationButton(_ sender: UIButton) {
         LocationService.default.startLocation()
+//        userSystemNav()
+//        drawNavPath()  //34.2274859637402,108.897247123795   34.2165240000,108.8880780000
+//        let locationOne = CLLocationCoordinate2D(latitude: 34.2274859637402, longitude: 108.897247123795)
+//        let locationTwo = CLLocationCoordinate2D(latitude: 34.2165240000, longitude: 108.8880780000)
+//        let locationArray = [locationOne,locationTwo]
+//        
+//        let polyLine = MKPolyline(coordinates: locationArray, count: locationArray.count)
+//        mapView.add(polyLine, level: .aboveRoads)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -70,8 +80,8 @@ class ViewController: UIViewController {
     func configMapView() {
         mapView.delegate = self
         mapView.userTrackingMode = .followWithHeading
-        mapView.isZoomEnabled = false
-        mapView.isScrollEnabled = false
+//        mapView.isZoomEnabled = false
+//        mapView.isScrollEnabled = false
     }
     
     func addNotification() {
@@ -85,7 +95,7 @@ class ViewController: UIViewController {
         var clRegion = CLCircularRegion(center: location, radius: 100, identifier: "userEnterCompany")
         clRegion.notifyOnExit = true
         clRegion.notifyOnEntry = true
-        var userNotificationTrigger = UNLocationNotificationTrigger(region: clRegion, repeats: false)
+        var userNotificationTrigger = UNLocationNotificationTrigger(region: clRegion, repeats: true)
         var requestNotifier = UNNotificationRequest(identifier: "userEnterCompany", content: userNotificationContent, trigger: userNotificationTrigger)
         userNotificationCenter.add(requestNotifier, withCompletionHandler: {
             print("\($0?.localizedDescription)")
@@ -99,7 +109,7 @@ class ViewController: UIViewController {
         clRegion = CLCircularRegion(center: location, radius: 100, identifier: "userEnterHome")
         clRegion.notifyOnExit = true
         clRegion.notifyOnEntry = true
-        userNotificationTrigger = UNLocationNotificationTrigger(region: clRegion, repeats: false)
+        userNotificationTrigger = UNLocationNotificationTrigger(region: clRegion, repeats: true)
         requestNotifier = UNNotificationRequest(identifier: "userEnterHome", content: userNotificationContent, trigger: userNotificationTrigger)
         userNotificationCenter.add(requestNotifier, withCompletionHandler: {
             print("\($0?.localizedDescription)")
@@ -191,13 +201,17 @@ extension ViewController : MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if overlay.isKind(of: MKCircle.self) {
+        
+        if let polyLine = overlay as? MKPolyline {
+            let mkPolyLineRenderer: MKPolylineRenderer = MKPolylineRenderer(overlay: overlay)
+            mkPolyLineRenderer.strokeColor = UIColor.red
+            mkPolyLineRenderer.lineWidth = 3.5
+            return mkPolyLineRenderer
+        } else {
             let mkCircle = MKCircleRenderer(circle: overlay as! MKCircle)
             mkCircle.fillColor = UIColor.cyan
             mkCircle.alpha = 0.3
             return mkCircle
-        } else {
-            return MKOverlayRenderer()
         }
     }
     
@@ -210,7 +224,114 @@ extension ViewController : MKMapViewDelegate {
             return nil
         }
     }
+    
+    func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
+        mapView.setUserTrackingMode(.followWithHeading, animated: true)
+    }
+    
 }
+
+
+//使用导航、以及绘制运动轨迹
+extension ViewController {
+    
+    ///使用系统导航
+    func userSystemNav() {
+        let sourceAddressName = "西安市"
+        let distensAddressName = "北京市"
+        
+        var sourceAddress: MKMapItem!
+        var distensAddress: MKMapItem!
+        
+        let geoCoder = CLGeocoder()
+        geoCoder.geocodeAddressString(sourceAddressName, completionHandler: {
+            if $0.0?.count == 0 || $0.1 != nil {
+                return
+            }
+            
+            let placemark: CLPlacemark! = $0.0?.last
+            let mkPlacemark = MKPlacemark(placemark: placemark)
+            sourceAddress = MKMapItem(placemark: mkPlacemark)
+    
+            geoCoder.geocodeAddressString(distensAddressName, completionHandler: {
+                if $0.0?.count == 0 || $0.1 != nil {
+                    return
+                }
+                
+                let placemark: CLPlacemark! = $0.0?.last
+                let mkPlacemark = MKPlacemark(placemark: placemark)
+                distensAddress = MKMapItem(placemark: mkPlacemark)
+                MKMapItem.openMaps(with: [sourceAddress, distensAddress], launchOptions: [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeWalking])
+            })
+        })
+    }
+    
+    
+    ///手动绘制导航线路
+    func drawNavPath() {
+        let distensAddressName = "北京市"
+        let sourceAddressName = "西安市"
+        
+        var distensAddress: MKMapItem!
+        var sourceAddress: MKMapItem!
+        
+        let geoCoder = CLGeocoder()
+        geoCoder.geocodeAddressString(sourceAddressName, completionHandler: {
+            if $0.0?.count == 0 || $0.1 != nil {
+                print("\($0.0),\($0.1?.localizedDescription)")
+                return
+            }
+            
+            let clPlacemark: CLPlacemark! = $0.0?.last
+            let mkPlcaeMark = MKPlacemark(placemark: clPlacemark)
+            sourceAddress = MKMapItem(placemark: mkPlcaeMark)
+            
+            geoCoder.geocodeAddressString(distensAddressName, completionHandler: {
+                if $0.0?.count == 0 || $0.1 != nil {
+                    return
+                }
+                
+                let placemark: CLPlacemark! = $0.0?.last
+                let mkPlacemark = MKPlacemark(placemark: placemark)
+                distensAddress = MKMapItem(placemark: mkPlacemark)
+                
+                var pointAnniotion = MKPointAnnotation()
+                pointAnniotion.coordinate = sourceAddress.placemark.coordinate
+                self.mapView.addAnnotation(pointAnniotion)
+                
+                pointAnniotion = MKPointAnnotation()
+                pointAnniotion.coordinate = distensAddress.placemark.coordinate
+                self.mapView.addAnnotation(pointAnniotion)
+                
+                let mkRequest = MKDirectionsRequest()
+                mkRequest.source = sourceAddress
+                mkRequest.destination = distensAddress
+                mkRequest.transportType = .automobile
+                
+                let mkDirection = MKDirections(request: mkRequest)
+                mkDirection.calculate(completionHandler: { [unowned self] in
+                        if $0.0?.routes.count == 0 || $0.1 != nil {
+                            print("caculate is error,\($0.0?.routes.count),\($0.1?.localizedDescription)")
+                            return
+                        }
+                        guard let routes = $0.0?.routes else {
+                            return
+                        }
+                    
+                        for route in routes {
+//                            self.mapView.add(route.polyline)
+                            for step in route.steps {
+                               self.mapView.add(step.polyline, level: .aboveRoads)
+                                print("\(step.instructions),\(step.distance)")
+                            }
+                        }
+                })
+            })
+            
+        })
+    }
+}
+
 
 
 class Overlay: NSObject, MKOverlay {
