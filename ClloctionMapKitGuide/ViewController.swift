@@ -34,13 +34,17 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        UIApplication.shared.applicationIconBadgeNumber = 0
+        let regularPhone = "\\^.{11}\\*"
+        let phoneString = "12345678911"
         
-        let userNotificationCenter = UNUserNotificationCenter.current()
-        userNotificationCenter.delegate = self
-        LocationService.default.delegate = self
-        configMapView()
-        addNotification()
+        print("\(phoneString.validatwWithRegExp(regExp: regularPhone))")
+//        UIApplication.shared.applicationIconBadgeNumber = 0
+//        
+//        let userNotificationCenter = UNUserNotificationCenter.current()
+//        userNotificationCenter.delegate = self
+//        LocationService.default.delegate = self
+//        configMapView()
+//        addNotification()
     }
 
     override func didReceiveMemoryWarning() {
@@ -347,3 +351,9 @@ func ==(left: CLLocationCoordinate2D, right: CLLocationCoordinate2D ) -> Bool {
     }
 }
 
+extension String {
+    func validatwWithRegExp(regExp: String) -> Bool {
+        let predicate = NSPredicate(format: "SELF MATCHES%@", regExp)
+        return predicate.evaluate(with: self)
+    }
+}
